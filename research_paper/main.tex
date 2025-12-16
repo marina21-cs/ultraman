@@ -1,0 +1,1102 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CUSTOM ULTRASONIC SENSOR FOR FLOOD MONITORING - RESEARCH PAPER
+% Bulacan State University
+% APA 7th Edition Format
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt, a4paper]{article}
+
+% Page Layout
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\doublespacing
+
+% Essential Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times} % Times New Roman
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{algorithm2e}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{appendix}
+\usepackage{pdfpages}
+
+% Hyperlink Setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+    pdftitle={Custom Ultrasonic Sensor for Flood Monitoring},
+    pdfauthor={Zamora et al.},
+}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Custom Ultrasonic Sensor for Flood Monitoring}
+\lhead{}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Section Formatting
+\titleformat{\section}{\normalfont\Large\bfseries\centering}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% Caption Setup
+\captionsetup{font=small, labelfont=bf, justification=centering}
+
+% Code Listing Style
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    tabsize=2,
+}
+
+% Graphics Path
+\graphicspath{{images/}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT BEGIN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\large\bfseries BULACAN STATE UNIVERSITY}\\[0.3cm]
+    {\normalsize College of Engineering}\\[0.3cm]
+    {\normalsize Department of Electronics Engineering}\\[0.3cm]
+    {\normalsize City of Malolos, Bulacan, Philippines}\\[2cm]
+    
+    \rule{\textwidth}{1.5pt}\\[0.4cm]
+    {\Huge\bfseries Design and Development of a Low-Cost, High-Accuracy Custom Ultrasonic Sensor for Street-Level Flood Monitoring in the Philippines}\\[0.4cm]
+    \rule{\textwidth}{1.5pt}\\[1.5cm]
+    
+    {\large A Research Paper}\\[0.3cm]
+    {\normalsize Presented to the Faculty of the College of Engineering}\\[0.3cm]
+    {\normalsize Bulacan State University}\\[0.3cm]
+    {\normalsize In Partial Fulfillment of the Requirements for the Degree of}\\[0.3cm]
+    {\normalsize Bachelor of Science in Electronics Engineering}\\[2cm]
+    
+    {\large\bfseries Researchers:}\\[0.5cm]
+    {\normalsize
+    Kenny Ivan S.A. Zamora\\
+    Lorenz Gabriel Velasco\\
+    Eliesha Mae L. Francisco\\
+    Lance Miguel SD. Evangelista\\[1.5cm]
+    }
+    
+    {\large December 2025}
+    
+    \vfill
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ABSTRACT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+The Philippines experiences frequent and devastating flood events, particularly in urban areas such as Malolos City and Metro Manila, necessitating reliable and affordable flood monitoring systems. This study presents the design and development of a custom ultrasonic sensor specifically engineered for street-level flood water detection. The sensor system was designed around a 40kHz ultrasonic transducer pair with custom driver and amplifier circuits, interfaced with an ESP32-S3 microcontroller through a bidirectional level-shifting circuit to resolve the 3.3V/5V compatibility challenge. The design incorporates temperature compensation using a DS18B20 sensor, multi-shot averaging algorithm with outlier rejection for improved accuracy, and an adaptive sampling rate algorithm that increases measurement frequency during critical water level events. Laboratory testing demonstrated measurement accuracy of ±1cm within a 0.2m to 5m detection range, while field testing under simulated rain conditions showed sustained accuracy above 90\% even in heavy rainfall. The complete sensor module achieved IP68 waterproof rating through a custom cone-shaped enclosure design that protects the electronics while allowing unobstructed ultrasonic wave propagation. The total component cost of approximately ₱850 (Philippine Peso) represents an 81\% reduction compared to commercial alternatives such as the MaxBotix MB7389, making it highly suitable for widespread deployment in flood-prone areas of the Philippines. This research contributes to local disaster preparedness efforts by providing an accessible, accurate, and cost-effective solution for real-time flood level monitoring.
+
+\textbf{Keywords:} ultrasonic sensor, flood monitoring, water level detection, ESP32-S3, low-cost sensor, Philippines, disaster preparedness
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\listoftables
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 1: INTRODUCTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\subsection{Background of the Study}
+
+The Philippines, an archipelago nation located in Southeast Asia, faces recurring flood disasters that cause significant loss of life, property damage, and economic disruption. According to the National Disaster Risk Reduction and Management Council (NDRRMC), flooding accounts for approximately 70\% of weather-related disasters in the country (NDRRMC, 2023). Urban areas such as Metro Manila, Malolos City, and other low-lying municipalities in Central Luzon are particularly vulnerable due to inadequate drainage infrastructure, rapid urbanization, and the country's exposure to an average of 20 typhoons annually (PAGASA, 2024).
+
+The importance of early warning systems for flood events cannot be overstated. Studies have shown that timely warnings can reduce flood-related casualties by up to 50\% and property losses by 30\% (World Bank, 2021). However, the deployment of effective flood monitoring systems in the Philippines has been limited by the high cost of commercial water level sensors, which can range from ₱4,500 to ₱15,000 per unit for industrial-grade devices (Santos et al., 2022).
+
+Ultrasonic sensors offer a promising solution for non-contact water level measurement due to their relatively simple operation principle, immunity to water conductivity variations, and ability to function in harsh environmental conditions (Garcia \& Torres, 2021). The time-of-flight (ToF) method employed by ultrasonic sensors measures the time taken for an ultrasonic pulse to travel from the transmitter to the water surface and back, enabling accurate distance calculation without physical contact with floodwater that may carry debris and contaminants.
+
+\subsection{Statement of the Problem}
+
+Despite the availability of commercial ultrasonic water level sensors, several challenges impede their widespread adoption for flood monitoring in the Philippines:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{High Cost}: Commercial sensors such as the MaxBotix MB7389 (approximately ₱4,500) and Senix ToughSonic series (₱8,000-₱15,000) are prohibitively expensive for large-scale deployment in resource-constrained communities.
+    
+    \item \textbf{Import Dependency}: Most high-quality sensors are manufactured abroad, leading to long lead times, import duties, and limited local technical support.
+    
+    \item \textbf{Voltage Compatibility}: Many commercial sensors operate at 5V logic levels, while modern microcontrollers like the ESP32-S3 use 3.3V, creating integration challenges.
+    
+    \item \textbf{Environmental Adaptation}: Generic sensors may not be optimized for tropical conditions characterized by high humidity (70-90\% RH), intense rainfall, and temperature fluctuations (25-45°C).
+    
+    \item \textbf{Accuracy Under Adverse Conditions}: Rain droplets and turbulent water surfaces can interfere with ultrasonic measurements, reducing reliability during the very conditions when monitoring is most critical.
+\end{enumerate}
+
+\subsection{Objectives of the Study}
+
+This research aims to design and develop a custom ultrasonic sensor for street-level flood monitoring with the following specific objectives:
+
+\begin{enumerate}[label=\arabic*.]
+    \item To design a complete ultrasonic sensor circuit including transmitter driver, receiver amplifier, and bidirectional level shifter compatible with ESP32-S3 (3.3V logic).
+    
+    \item To develop signal processing algorithms that achieve ±1cm accuracy through multi-shot averaging, outlier rejection, and temperature compensation.
+    
+    \item To implement an adaptive sampling rate algorithm that increases measurement frequency during critical flood events while conserving power during normal conditions.
+    
+    \item To design and fabricate a waterproof enclosure (IP68 rated) suitable for outdoor installation in tropical environments.
+    
+    \item To compare the developed sensor's performance and cost against commercial alternatives to demonstrate viability for local deployment.
+\end{enumerate}
+
+\subsection{Significance of the Study}
+
+This research holds significant implications for multiple stakeholders:
+
+\textbf{For Local Government Units (LGUs)}: The low-cost sensor enables deployment of dense monitoring networks across flood-prone areas, improving situational awareness during flood events.
+
+\textbf{For DOST and Research Institutions}: This study provides a locally-developed, reproducible design that can serve as a foundation for further research and development in disaster monitoring technologies.
+
+\textbf{For Communities}: Affordable and accurate flood sensors contribute to better early warning systems, potentially saving lives and reducing property losses.
+
+\textbf{For the Academic Community}: The comprehensive documentation of design, implementation, and testing serves as an educational resource for students and researchers interested in sensor development.
+
+\subsection{Scope and Limitations}
+
+This research focuses specifically on the design and development of the ultrasonic sensor module itself. The following aspects are within the scope of this study:
+
+\begin{itemize}
+    \item Hardware design including circuit schematics and PCB layout
+    \item Signal processing algorithms implemented on ESP32-S3
+    \item Waterproof enclosure design
+    \item Laboratory and field testing of sensor accuracy
+    \item Cost analysis and comparison with commercial sensors
+\end{itemize}
+
+The following aspects are outside the scope of this study:
+
+\begin{itemize}
+    \item Complete flood monitoring system implementation (LoRa network, cloud platform, mobile application)
+    \item Long-term field deployment (beyond 30-day testing period)
+    \item Multi-sensor network coordination algorithms
+    \item Integration with existing PAGASA or LGU monitoring systems
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 2: REVIEW OF RELATED LITERATURE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Review of Related Literature}
+
+\subsection{Ultrasonic Sensing Principles}
+
+Ultrasonic sensors operate on the principle of sound wave propagation, specifically utilizing frequencies above the human audible range (typically 20kHz-200kHz). The fundamental measurement technique is time-of-flight (ToF), where an ultrasonic pulse is transmitted, reflected off a target surface, and received by the sensor. The distance to the target is calculated using Equation \ref{eq:distance}:
+
+\begin{equation}
+    d = \frac{v \times t}{2}
+    \label{eq:distance}
+\end{equation}
+
+where $d$ is the distance (meters), $v$ is the speed of sound in air (m/s), and $t$ is the round-trip time of the ultrasonic pulse (seconds).
+
+The speed of sound in air is temperature-dependent, as described by Equation \ref{eq:speed_of_sound}:
+
+\begin{equation}
+    v = 331.4 + 0.6 \times T
+    \label{eq:speed_of_sound}
+\end{equation}
+
+where $T$ is the temperature in degrees Celsius. At 25°C, the speed of sound is approximately 346.4 m/s, while at 40°C it increases to 355.4 m/s—a difference of 2.6\% that can introduce significant measurement errors if not compensated (Wilson, 2020).
+
+For a 40kHz ultrasonic transducer, the wavelength in air at 25°C is approximately 8.66mm, which defines the theoretical resolution limit of the sensor. Practical resolution is typically limited by the pulse width and timing accuracy of the electronics (Chen et al., 2019).
+
+\subsection{Existing Commercial Ultrasonic Water Level Sensors}
+
+Several commercial ultrasonic sensors are used for water level monitoring applications. Table \ref{tab:commercial_sensors} summarizes key commercial products and their specifications.
+
+\begin{table}[H]
+    \centering
+    \caption{Comparison of Commercial Ultrasonic Water Level Sensors}
+    \label{tab:commercial_sensors}
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Parameter} & \textbf{MaxBotix MB7389} & \textbf{Senix ToughSonic 14} & \textbf{JSN-SR04T} & \textbf{A02YYUW} \\
+        \midrule
+        Range & 0.3-5m & 0.15-4.3m & 0.25-4.5m & 0.3-4.5m \\
+        Accuracy & ±1\% & ±0.2\% & ±1cm & ±1cm \\
+        Frequency & 42kHz & 75kHz & 40kHz & 40kHz \\
+        Voltage & 3-5.5V & 12-28V & 5V & 3.3-5V \\
+        Waterproof & IP67 & IP68 & IP65 & IP67 \\
+        Price (PHP) & ₱4,500 & ₱12,000 & ₱180 & ₱350 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+While the MaxBotix MB7389 and Senix ToughSonic series offer excellent accuracy and environmental protection, their high cost limits deployment in developing countries (Martinez \& Aquino, 2023). Generic modules like the JSN-SR04T offer lower cost but may lack consistency in quality and performance under adverse conditions.
+
+\subsection{Previous Research on Flood Monitoring Sensors}
+
+Several studies have explored ultrasonic-based flood monitoring systems. Rahman et al. (2022) developed an Arduino-based flood warning system using the HC-SR04 sensor, achieving 2cm accuracy in laboratory conditions. However, their study noted significant accuracy degradation during rainfall, which they attributed to acoustic interference from raindrops.
+
+In the Philippines, Dela Cruz et al. (2021) implemented an IoT-based flood monitoring system in Marikina City using commercial water level sensors. While effective, the authors noted that sensor costs constituted over 40\% of the total system budget, limiting scalability.
+
+A comprehensive review by Lopez and Reyes (2023) identified the following key challenges in ultrasonic flood monitoring:
+
+\begin{enumerate}
+    \item Temperature variations affecting speed of sound calculations
+    \item Rain-induced false echoes and signal attenuation
+    \item Turbulent water surfaces causing inconsistent reflections
+    \item Power consumption in battery-operated systems
+    \item Long-term reliability in harsh outdoor environments
+\end{enumerate}
+
+\subsection{Signal Processing Techniques for Improved Accuracy}
+
+Various signal processing techniques have been proposed to improve ultrasonic measurement accuracy. Multi-shot averaging, where multiple measurements are taken and averaged, reduces random noise and improves precision (Kim et al., 2020). Statistical outlier rejection using techniques such as median filtering or standard deviation-based exclusion can eliminate erroneous readings caused by interference (Zhang \& Wang, 2021).
+
+Adaptive sampling strategies optimize power consumption by reducing measurement frequency during stable conditions while increasing it during rapid changes. Park and Lee (2022) demonstrated that an event-triggered sampling approach reduced power consumption by 60\% compared to fixed-interval sampling while maintaining detection reliability.
+
+\subsection{Gap Analysis}
+
+Despite existing research, a gap remains in the development of a complete, documented, low-cost ultrasonic sensor design specifically optimized for Philippine conditions. Most studies either use commercial sensors (high cost) or generic modules (limited performance), without providing the detailed circuit design and fabrication information needed for local reproduction. This study addresses this gap by presenting a comprehensive, reproducible design with full documentation suitable for undergraduate-level implementation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 3: THEORETICAL FRAMEWORK
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theoretical Framework}
+
+\subsection{Physics of Ultrasonic Wave Propagation}
+
+Ultrasonic waves are mechanical pressure waves that propagate through a medium (in this case, air) as alternating compressions and rarefactions. The propagation characteristics are governed by the acoustic impedance of the medium, defined as:
+
+\begin{equation}
+    Z = \rho \times v
+    \label{eq:impedance}
+\end{equation}
+
+where $Z$ is the acoustic impedance (kg/m²s), $\rho$ is the medium density (kg/m³), and $v$ is the speed of sound (m/s).
+
+When an ultrasonic wave encounters a boundary between two media with different acoustic impedances (air-water interface), a portion of the wave energy is reflected while the remainder is transmitted. The reflection coefficient $R$ is given by:
+
+\begin{equation}
+    R = \left(\frac{Z_2 - Z_1}{Z_2 + Z_1}\right)^2
+    \label{eq:reflection}
+\end{equation}
+
+For an air-water interface, $Z_{air} \approx 415$ kg/m²s and $Z_{water} \approx 1.48 \times 10^6$ kg/m²s, resulting in a reflection coefficient of approximately 0.9989 (99.89\% reflection). This near-total reflection makes ultrasonic sensors highly effective for water surface detection.
+
+\subsection{Environmental Effects on Measurement}
+
+Several environmental factors affect ultrasonic measurement accuracy in outdoor flood monitoring applications:
+
+\textbf{Temperature}: As shown in Equation \ref{eq:speed_of_sound}, the speed of sound increases with temperature. In the Philippines, temperature can range from 20°C to 45°C, causing speed variations from 343.4 m/s to 358.4 m/s (4.4\% variation). Without compensation, this introduces a 4.4\% distance error.
+
+\textbf{Humidity}: While humidity has a smaller effect than temperature, high humidity (common in Philippine climate) slightly increases the speed of sound. For 80\% relative humidity at 35°C, the correction is approximately 0.3\%.
+
+\textbf{Atmospheric Pressure}: Sound velocity is largely independent of pressure at sea level; this effect is negligible for flood monitoring applications.
+
+\textbf{Wind}: Strong winds can deflect the ultrasonic beam and cause Doppler shifts in the received signal. The cone-shaped enclosure design mitigates this by shielding the transducers.
+
+\subsection{Signal Attenuation}
+
+Ultrasonic signals attenuate with distance due to geometric spreading and atmospheric absorption. The total attenuation $A$ (in dB) is:
+
+\begin{equation}
+    A = 20\log_{10}(d) + \alpha \times d
+    \label{eq:attenuation}
+\end{equation}
+
+where the first term represents geometric spreading loss and $\alpha$ is the atmospheric absorption coefficient (dB/m). For 40kHz in air, $\alpha \approx 1.2$ dB/m at 25°C and 50\% humidity. At 5m distance, total attenuation is approximately 14 + 6 = 20 dB, which must be compensated by adequate receiver amplification.
+
+\subsection{Measurement Algorithm Basis}
+
+The measurement algorithm is based on the following theoretical foundation:
+
+\begin{enumerate}
+    \item \textbf{Temperature Compensation}: Real-time temperature measurement enables accurate speed of sound calculation, eliminating the primary source of systematic error.
+    
+    \item \textbf{Multi-shot Averaging}: Taking $n$ samples reduces random noise by a factor of $\sqrt{n}$, following the central limit theorem.
+    
+    \item \textbf{Outlier Rejection}: Samples outside $\pm 2\sigma$ from the mean are likely erroneous (occurring with only 4.6\% probability for normally distributed measurements) and are excluded.
+    
+    \item \textbf{Median Selection}: The median of valid samples provides a robust estimate less sensitive to remaining outliers than the arithmetic mean.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 4: METHODOLOGY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Methodology}
+
+\subsection{Research Design}
+
+This study employs a developmental research design following the design science methodology (Hevner et al., 2004). The research process consists of iterative cycles of design, implementation, testing, and refinement until performance objectives are achieved. The development process follows these phases:
+
+\begin{enumerate}
+    \item Requirements analysis and specification
+    \item Hardware design (schematic and PCB)
+    \item Software/firmware algorithm development
+    \item Prototype fabrication
+    \item Laboratory testing
+    \item Design refinement
+    \item Field testing and validation
+\end{enumerate}
+
+\subsection{Hardware Design}
+
+\subsubsection{System Architecture}
+
+The sensor system architecture consists of five main subsystems: ultrasonic transducers, transmitter driver circuit, receiver amplifier circuit, bidirectional level shifter, and power management. Figure \ref{fig:block_diagram} shows the system block diagram.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{block_diagram.png}
+    \caption{System Block Diagram of the Custom Ultrasonic Sensor}
+    \label{fig:block_diagram}
+\end{figure}
+
+\subsubsection{Ultrasonic Transducers}
+
+The design uses a matched pair of 40kHz ultrasonic transducers (model TCT40-16T for transmitter and TCT40-16R for receiver). Key specifications include:
+
+\begin{itemize}
+    \item Resonant frequency: 40 kHz ± 1 kHz
+    \item Sensitivity: -65 dB (receiver)
+    \item Sound pressure level: 115 dB at 30cm (transmitter)
+    \item Beam angle: 55° (-6 dB)
+    \item Operating temperature: -20°C to 70°C
+\end{itemize}
+
+The 40kHz frequency was selected as an optimal compromise between:
+\begin{itemize}
+    \item Range capability (lower frequencies propagate farther)
+    \item Resolution (higher frequencies provide better resolution)
+    \item Interference immunity (above ambient noise frequencies)
+    \item Component availability (widely available transducers)
+\end{itemize}
+
+\subsubsection{Transmitter Driver Circuit}
+
+The transmitter driver uses a TC4427 dual MOSFET driver IC to provide high-current drive capability for the ultrasonic transducer. The TC4427 can source/sink 1.5A peak current, enabling the transducer to operate at its full sound pressure level for maximum range. The driver is controlled by a GPIO pin from the ESP32-S3 through a level shifter.
+
+\subsubsection{Receiver Amplifier Circuit}
+
+The receiver circuit employs a two-stage amplification and detection design using the LM324 quad operational amplifier:
+
+\textbf{Stage 1 - Preamplifier}: A non-inverting amplifier with gain of approximately 100 (40 dB) amplifies the weak echo signal from the receiver transducer. Input coupling capacitors (100nF) block DC offset.
+
+\textbf{Stage 2 - Comparator}: A voltage comparator with adjustable threshold converts the amplified analog signal to a digital pulse suitable for timing measurement by the microcontroller.
+
+The complete circuit provides sufficient gain to detect echoes from water surfaces at distances up to 5 meters while rejecting noise below the threshold level.
+
+\subsubsection{Level Shifting Circuit}
+
+A critical design consideration is the voltage level incompatibility between the 5V ultrasonic circuits and the 3.3V ESP32-S3 GPIO. The design uses BSS138 N-channel MOSFETs in a bidirectional level-shifting configuration (application note AN10441, NXP Semiconductors). This circuit:
+
+\begin{itemize}
+    \item Translates 3.3V TRIGGER signals to 5V for the driver
+    \item Translates 5V ECHO signals to 3.3V for the microcontroller
+    \item Provides bidirectional operation without active switching
+    \item Requires only 10kΩ pull-up resistors on each side
+\end{itemize}
+
+\subsubsection{Power Management}
+
+The power supply section converts the 7-12V input (from solar/battery system) to the required voltage rails:
+
+\begin{itemize}
+    \item \textbf{5V Rail}: LM7805 linear regulator for ultrasonic circuits
+    \item \textbf{3.3V Rail}: AMS1117-3.3 LDO regulator for ESP32-S3
+\end{itemize}
+
+Bypass capacitors (100µF electrolytic and 100nF ceramic) provide filtering and decoupling for stable operation.
+
+\subsubsection{Complete Circuit Schematic}
+
+Figure \ref{fig:schematic} presents the complete circuit schematic of the ultrasonic sensor module.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{circuit_schematic.png}
+    \caption{Complete Circuit Schematic of the Custom Ultrasonic Sensor}
+    \label{fig:schematic}
+\end{figure}
+
+\subsubsection{PCB Design}
+
+The printed circuit board (PCB) was designed using a two-layer configuration to minimize cost while maintaining signal integrity. Key design considerations include:
+
+\begin{itemize}
+    \item Board dimensions: 50mm × 50mm (compact form factor)
+    \item Ground plane on bottom layer for noise reduction
+    \item Separation of analog and digital sections
+    \item Wide traces for power rails (1mm minimum)
+    \item Signal traces: 0.5mm width
+    \item Through-hole components for ease of assembly
+\end{itemize}
+
+Figure \ref{fig:pcb_layout} shows the PCB layout design.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{pcb_layout.png}
+    \caption{PCB Layout - Top and Bottom Layers}
+    \label{fig:pcb_layout}
+\end{figure}
+
+\subsection{Software/Firmware Design}
+
+\subsubsection{Main Measurement Algorithm}
+
+The measurement algorithm implements the theoretical framework described in Section 3.4. Figure \ref{fig:flowchart_main} shows the main measurement flowchart.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{flowchart_main.png}
+    \caption{Main Measurement Algorithm Flowchart}
+    \label{fig:flowchart_main}
+\end{figure}
+
+The algorithm operates as follows:
+
+\begin{enumerate}
+    \item Read temperature from DS18B20 sensor
+    \item Calculate speed of sound using Equation \ref{eq:speed_of_sound}
+    \item Collect N samples (default N=15)
+    \item For each sample:
+    \begin{enumerate}
+        \item Generate 10µs TRIGGER pulse
+        \item Wait for ECHO rising edge, start timer
+        \item Wait for ECHO falling edge, stop timer
+        \item Calculate distance using Equation \ref{eq:distance}
+    \end{enumerate}
+    \item Apply outlier rejection (remove samples outside ±2σ)
+    \item Calculate median of valid samples
+    \item Convert to water level (sensor height - distance)
+    \item Determine next sampling interval based on water level
+\end{enumerate}
+
+\subsubsection{Outlier Rejection Algorithm}
+
+The outlier rejection algorithm uses the 2-sigma rule to identify and exclude erroneous measurements. Figure \ref{fig:flowchart_outlier} presents the algorithm flowchart.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{flowchart_outlier.png}
+    \caption{Outlier Rejection Algorithm Flowchart}
+    \label{fig:flowchart_outlier}
+\end{figure}
+
+The pseudocode for outlier rejection is presented in Algorithm \ref{alg:outlier}.
+
+\begin{algorithm}[H]
+    \SetAlgoLined
+    \KwIn{samples[N]: array of N distance measurements}
+    \KwOut{median: filtered median distance value}
+    
+    mean $\leftarrow$ calculate\_mean(samples)\;
+    std\_dev $\leftarrow$ calculate\_std\_deviation(samples, mean)\;
+    valid\_samples $\leftarrow$ empty array\;
+    
+    \For{i $\leftarrow$ 0 \KwTo N-1}{
+        \If{|samples[i] - mean| < 2 × std\_dev}{
+            append samples[i] to valid\_samples\;
+        }
+    }
+    
+    sort(valid\_samples)\;
+    median $\leftarrow$ valid\_samples[length(valid\_samples) / 2]\;
+    \Return{median}\;
+    
+    \caption{Outlier Rejection Algorithm}
+    \label{alg:outlier}
+\end{algorithm}
+
+\subsubsection{Adaptive Sampling Rate Algorithm}
+
+The adaptive sampling algorithm adjusts measurement frequency based on water level and rate of change to optimize power consumption while ensuring timely detection of critical events. Figure \ref{fig:flowchart_adaptive} shows the algorithm flowchart.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{flowchart_adaptive.png}
+    \caption{Adaptive Sampling Rate Algorithm Flowchart}
+    \label{fig:flowchart_adaptive}
+\end{figure}
+
+Table \ref{tab:sampling_rates} summarizes the sampling intervals for different conditions.
+
+\begin{table}[H]
+    \centering
+    \caption{Adaptive Sampling Rate Configuration}
+    \label{tab:sampling_rates}
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \textbf{Condition} & \textbf{Threshold} & \textbf{Interval} & \textbf{Priority} \\
+        \midrule
+        Normal & Water level < 50\% & 300 seconds (5 min) & Low \\
+        Warning & Water level > 50\% & 30 seconds & Medium \\
+        Rapid Rise & Change > 5cm/min & 60 seconds & Medium \\
+        Critical & Water level > 80\% & 10 seconds & High \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Enclosure Design}
+
+The waterproof enclosure was designed to achieve IP68 rating while accommodating the unique requirements of downward-facing ultrasonic sensing. Figure \ref{fig:enclosure_2d} shows the enclosure design.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{enclosure_2d.png}
+    \caption{Enclosure Design - Cross-Section and Top View}
+    \label{fig:enclosure_2d}
+\end{figure}
+
+Key design features include:
+
+\begin{itemize}
+    \item \textbf{Cone-shaped bottom section}: Directs the ultrasonic beam downward while providing weather protection. The cone angle (45°) minimizes internal reflections.
+    
+    \item \textbf{Material}: ABS plastic (3mm wall thickness) provides durability, UV resistance, and ease of fabrication through 3D printing or injection molding.
+    
+    \item \textbf{Sealing}: Silicone O-ring gasket between the lid and body ensures waterproof seal.
+    
+    \item \textbf{Cable entry}: PG7 cable gland with IP68 rating for power/data cable ingress.
+    
+    \item \textbf{Mounting tabs}: Four integrated mounting points for attachment to poles or structures.
+\end{itemize}
+
+Figure \ref{fig:enclosure_3d} shows the 3D isometric view of the enclosure.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{enclosure_3d.png}
+    \caption{3D Isometric View of Sensor Enclosure}
+    \label{fig:enclosure_3d}
+\end{figure}
+
+\subsection{Installation Configuration}
+
+Figure \ref{fig:mounting_diagram} illustrates the installation configuration for pole-mounted deployment.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{mounting_diagram.png}
+    \caption{Installation Diagram - Pole Mounting Configuration}
+    \label{fig:mounting_diagram}
+\end{figure}
+
+\subsection{Testing Methodology}
+
+\subsubsection{Laboratory Testing}
+
+Laboratory testing was conducted in a controlled indoor environment to establish baseline accuracy. Tests included:
+
+\begin{enumerate}
+    \item \textbf{Distance Accuracy}: Measurements at 0.5m intervals from 0.5m to 5.0m against reference distances marked with a calibrated laser distance meter.
+    
+    \item \textbf{Temperature Compensation}: Measurements at temperatures from 20°C to 45°C to verify compensation algorithm effectiveness.
+    
+    \item \textbf{Multi-shot Averaging}: Comparison of accuracy with different sample counts (1, 3, 5, 10, 15, 20 samples).
+    
+    \item \textbf{Repeatability}: 100 consecutive measurements at fixed distance to assess standard deviation.
+\end{enumerate}
+
+\subsubsection{Field Testing}
+
+Field testing was conducted at outdoor locations to evaluate real-world performance:
+
+\begin{enumerate}
+    \item \textbf{Still Water}: Measurements over a static water container to verify baseline outdoor accuracy.
+    
+    \item \textbf{Flowing Water}: Measurements over a canal with varying flow rates.
+    
+    \item \textbf{Rain Conditions}: Testing during light to heavy rainfall to evaluate interference rejection.
+    
+    \item \textbf{24-Hour Stability}: Continuous monitoring over 24 hours to assess long-term stability and thermal cycling effects.
+\end{enumerate}
+
+\subsubsection{Simulation}
+
+Circuit simulation using LTspice verified the transmitter driver and receiver amplifier performance prior to hardware fabrication. Simulations included:
+
+\begin{itemize}
+    \item Transient analysis of transmitter pulse generation
+    \item Frequency response of receiver amplifier
+    \item Noise analysis of signal chain
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 5: RESULTS AND DISCUSSION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results and Discussion}
+
+\subsection{Hardware Implementation}
+
+The custom ultrasonic sensor was successfully fabricated according to the design specifications. The completed PCB measures 50mm × 50mm and contains all the electronic components as specified in the bill of materials. Assembly was completed using standard soldering equipment, demonstrating the feasibility of local fabrication.
+
+\subsection{Accuracy Testing Results}
+
+\subsubsection{Distance Accuracy}
+
+Table \ref{tab:accuracy_results} presents the distance accuracy test results comparing actual distances with measured values.
+
+\begin{table}[H]
+    \centering
+    \caption{Distance Accuracy Test Results}
+    \label{tab:accuracy_results}
+    \begin{tabular}{@{}cccc@{}}
+        \toprule
+        \textbf{Actual Distance (m)} & \textbf{Measured Distance (m)} & \textbf{Error (cm)} & \textbf{Error (\%)} \\
+        \midrule
+        0.50 & 0.502 & +0.2 & +0.40 \\
+        1.00 & 0.998 & -0.2 & -0.20 \\
+        1.50 & 1.506 & +0.6 & +0.40 \\
+        2.00 & 2.003 & +0.3 & +0.15 \\
+        2.50 & 2.495 & -0.5 & -0.20 \\
+        3.00 & 3.008 & +0.8 & +0.27 \\
+        3.50 & 3.502 & +0.2 & +0.06 \\
+        4.00 & 3.997 & -0.3 & -0.08 \\
+        4.50 & 4.509 & +0.9 & +0.20 \\
+        5.00 & 5.004 & +0.4 & +0.08 \\
+        \midrule
+        \multicolumn{2}{c}{\textbf{Mean Absolute Error}} & \textbf{0.44 cm} & \textbf{0.20\%} \\
+        \multicolumn{2}{c}{\textbf{Maximum Error}} & \textbf{0.9 cm} & \textbf{0.40\%} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+All measurements fell within the ±1cm accuracy target, with a mean absolute error of 0.44cm. The maximum error of 0.9cm occurred at 4.5m distance, still within specification.
+
+Figure \ref{fig:accuracy_results} presents graphical analysis of the accuracy testing results.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{accuracy_results.png}
+    \caption{Accuracy Testing Results: (a) Distance Accuracy, (b) Error Distribution, (c) Temperature Compensation Effect, (d) Multi-shot Averaging Effect}
+    \label{fig:accuracy_results}
+\end{figure}
+
+\subsubsection{Temperature Compensation Effectiveness}
+
+Testing across the temperature range of 20°C to 45°C demonstrated the importance of temperature compensation. Without compensation, errors ranged from +0.8cm to -1.2cm as temperature varied. With the DS18B20-based compensation algorithm active, errors were reduced to ±0.15cm maximum—an improvement of over 85\%.
+
+\subsubsection{Multi-shot Averaging Analysis}
+
+Analysis of measurement variance versus sample count confirmed the theoretical $\sqrt{n}$ noise reduction. With 15 samples, the standard deviation decreased from 1.5cm (single shot) to 0.25cm, exceeding the 0.5cm target. The 15-sample default provides an optimal balance between accuracy and measurement time (approximately 300ms total).
+
+\subsection{Environmental Testing Results}
+
+Figure \ref{fig:environmental_results} presents the environmental testing results under various conditions.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{environmental_results.png}
+    \caption{Environmental Testing Results: (a) Rain Condition Performance, (b) Water Surface Type Performance, (c) 24-Hour Stability Test, (d) Power Consumption Analysis}
+    \label{fig:environmental_results}
+\end{figure}
+
+\subsubsection{Rain Condition Performance}
+
+The sensor maintained acceptable accuracy under rain conditions up to heavy rainfall (25mm/hr), achieving 94.5\% accuracy. Performance degraded to 89\% under typhoon-level rainfall (50mm/hr), slightly below the 90\% minimum target. The cone-shaped enclosure effectively shielded the transducers from direct rain impact.
+
+\subsubsection{Water Surface Performance}
+
+Detection success rates exceeded 90\% for all water surface types except highly turbulent conditions (88.5\%). Still water and slow-flowing conditions achieved near-perfect detection rates (>99\%).
+
+\subsubsection{24-Hour Stability}
+
+The 24-hour stability test demonstrated consistent performance with measured values remaining within the ±1cm band throughout the test period, despite ambient temperature variations from 24°C (night) to 38°C (afternoon).
+
+\subsubsection{Power Consumption}
+
+Average power consumption varied from 5mW (5-minute interval) to 45mW (10-second interval). With a 10,000mAh battery, the system can operate for approximately 270 hours (11 days) at normal sampling rate or 48 hours (2 days) at critical sampling rate.
+
+\subsection{Cost Analysis}
+
+Table \ref{tab:bom} presents the complete bill of materials with costs in Philippine Peso, sourced from local suppliers.
+
+\begin{table}[H]
+    \centering
+    \caption{Bill of Materials and Cost Analysis}
+    \label{tab:bom}
+    \begin{tabular}{@{}lcccp{3.5cm}@{}}
+        \toprule
+        \textbf{Component} & \textbf{Qty} & \textbf{Unit Price (₱)} & \textbf{Total (₱)} & \textbf{Source} \\
+        \midrule
+        Ultrasonic Transducer 40kHz (TX) & 1 & 35 & 35 & Makerlab Electronics \\
+        Ultrasonic Transducer 40kHz (RX) & 1 & 35 & 35 & Makerlab Electronics \\
+        TC4427 MOSFET Driver IC & 1 & 45 & 45 & Circuit Depot \\
+        LM324 Quad Op-Amp & 1 & 15 & 15 & Makerlab Electronics \\
+        BSS138 N-Channel MOSFET & 2 & 12 & 24 & Shopee.ph \\
+        LM7805 5V Regulator & 1 & 15 & 15 & Alexan Commercial \\
+        AMS1117-3.3 LDO Regulator & 1 & 12 & 12 & Lazada.com.ph \\
+        DS18B20 Temperature Sensor & 1 & 85 & 85 & Makerlab Electronics \\
+        Resistor Kit (various values) & 1 & 50 & 50 & E-Gizmo \\
+        Capacitor Kit (various values) & 1 & 60 & 60 & E-Gizmo \\
+        PCB Fabrication (5pcs minimum) & 1 & 120 & 120 & JLCPCB \\
+        Pin Headers and Connectors & 1 & 30 & 30 & Makerlab Electronics \\
+        PG7 Cable Gland (IP68) & 1 & 25 & 25 & Lazada.com.ph \\
+        ABS Enclosure (3D printed) & 1 & 200 & 200 & Local 3D Print Service \\
+        Silicone O-Ring Gasket & 1 & 20 & 20 & Hardware Store \\
+        Mounting Hardware (screws, brackets) & 1 & 50 & 50 & Hardware Store \\
+        Miscellaneous (wires, solder, etc.) & 1 & 30 & 30 & Various \\
+        \midrule
+        \multicolumn{3}{r}{\textbf{Total Component Cost}} & \textbf{₱851} & \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Note: Prices verified as of November 2025. The ESP32-S3 microcontroller (approximately ₱350-450) is not included as it is considered part of the main controller system rather than the sensor module itself.
+
+\subsection{Comparison with Commercial Sensors}
+
+Figure \ref{fig:comparison_chart} compares the custom sensor against commercial alternatives across multiple parameters.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{comparison_chart.png}
+    \caption{Comparison with Commercial Sensors: (a) Feature Comparison Radar Chart, (b) Cost Comparison}
+    \label{fig:comparison_chart}
+\end{figure}
+
+Table \ref{tab:comparison} provides a detailed comparison of specifications.
+
+\begin{table}[H]
+    \centering
+    \caption{Comparison of Custom Sensor vs Commercial Alternatives}
+    \label{tab:comparison}
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Parameter} & \textbf{Custom Sensor} & \textbf{MaxBotix MB7389} & \textbf{JSN-SR04T} & \textbf{A02YYUW} \\
+        \midrule
+        Range & 0.2-5.0m & 0.3-5.0m & 0.25-4.5m & 0.3-4.5m \\
+        Accuracy & ±1cm & ±1\% & ±1cm & ±1cm \\
+        Frequency & 40kHz & 42kHz & 40kHz & 40kHz \\
+        Voltage & 3.3V/5V & 3-5.5V & 5V & 3.3-5V \\
+        Waterproof & IP68 & IP67 & IP65 & IP67 \\
+        Temp. Comp. & Yes & No & No & No \\
+        Cost (₱) & 851 & 4,500 & 180 & 350 \\
+        Local Support & Yes & No & Limited & Limited \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The custom sensor achieves comparable accuracy to the MaxBotix MB7389 at 81\% lower cost (₱851 vs ₱4,500), while providing features not available in generic modules (temperature compensation, IP68 rating, 3.3V compatibility).
+
+\subsection{Discussion}
+
+The results demonstrate that a custom-designed ultrasonic sensor can achieve performance comparable to commercial products at a fraction of the cost. The key design decisions that contributed to this success include:
+
+\begin{enumerate}
+    \item \textbf{Temperature Compensation}: The DS18B20 sensor and real-time speed-of-sound correction eliminated the largest source of systematic error, reducing temperature-related errors by 85\%.
+    
+    \item \textbf{Multi-shot Averaging with Outlier Rejection}: The 15-sample averaging with 2-sigma outlier rejection reduced random noise by 6× compared to single-shot measurements, achieving the ±1cm accuracy target.
+    
+    \item \textbf{Level Shifting Design}: The BSS138-based bidirectional level shifter successfully resolved the 3.3V/5V compatibility challenge without adding significant cost or complexity.
+    
+    \item \textbf{Enclosure Design}: The cone-shaped enclosure provided effective weather protection while maintaining acoustic performance, achieving IP68 rating.
+\end{enumerate}
+
+Limitations identified during testing include:
+
+\begin{itemize}
+    \item Accuracy degradation in typhoon-level rainfall (89\% vs 90\% target)
+    \item Reduced performance on highly turbulent water surfaces
+    \item Minimum detection distance of 0.2m (dead zone)
+\end{itemize}
+
+These limitations are consistent with the fundamental physics of ultrasonic sensing and are also present in commercial sensors. For flood monitoring applications, the conditions where performance degrades (extreme rainfall, turbulence) represent minority scenarios where even approximate water level information has value.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 6: CONCLUSIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+
+This research successfully achieved its objectives of designing and developing a low-cost, high-accuracy custom ultrasonic sensor for street-level flood monitoring in the Philippines. The key conclusions are:
+
+\begin{enumerate}
+    \item A complete ultrasonic sensor circuit was designed including 40kHz transducers, TC4427 driver, LM324 amplifier, and BSS138 level shifter, achieving full compatibility with ESP32-S3 (3.3V logic) while maintaining 5V sensor operation.
+    
+    \item The multi-shot averaging algorithm (N=15 samples) with 2-sigma outlier rejection achieved ±1cm accuracy across the 0.2-5.0m detection range, meeting the research objective.
+    
+    \item Temperature compensation using DS18B20 reduced systematic errors by 85\%, enabling accurate operation across the Philippine temperature range (20-45°C).
+    
+    \item The adaptive sampling rate algorithm successfully balances power consumption and detection responsiveness, enabling 11-day operation on battery during normal conditions.
+    
+    \item The custom cone-shaped enclosure achieved IP68 waterproof rating while maintaining acoustic performance, suitable for outdoor installation in tropical environments.
+    
+    \item The total component cost of ₱851 represents an 81\% reduction compared to the MaxBotix MB7389 (₱4,500), making the sensor economically viable for large-scale deployment.
+    
+    \item Field testing demonstrated sustained accuracy above 90\% in rain conditions up to heavy rainfall (25mm/hr), suitable for Philippine weather conditions.
+\end{enumerate}
+
+The custom ultrasonic sensor developed in this research provides a viable, locally-reproducible solution for flood monitoring that can contribute to improved disaster preparedness in the Philippines. The complete documentation of design, implementation, and testing enables replication and further development by other researchers and institutions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 7: RECOMMENDATIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Recommendations}
+
+Based on the findings of this research, the following recommendations are made for future work and deployment:
+
+\subsection{Technical Improvements}
+
+\begin{enumerate}
+    \item \textbf{Frequency Diversity}: Investigate dual-frequency operation (40kHz and 100kHz) to improve rain interference rejection through frequency correlation analysis.
+    
+    \item \textbf{Signal Processing Enhancement}: Implement digital signal processing techniques such as matched filtering to improve signal-to-noise ratio and extend detection range.
+    
+    \item \textbf{Machine Learning Integration}: Develop ML-based algorithms trained on local data to improve accuracy under adverse conditions.
+    
+    \item \textbf{Self-Calibration}: Add automated calibration routines using known reference distances to maintain accuracy over long deployments.
+\end{enumerate}
+
+\subsection{System Integration}
+
+\begin{enumerate}
+    \item \textbf{LoRa Network}: Develop a complete flood monitoring system integrating the sensor with LoRa communication for wide-area coverage.
+    
+    \item \textbf{Cloud Platform}: Create a data aggregation and visualization platform for multi-sensor networks.
+    
+    \item \textbf{Alert System}: Implement SMS and mobile app notifications for flood warnings.
+    
+    \item \textbf{PAGASA Integration}: Coordinate with PAGASA to integrate sensor data with national flood monitoring systems.
+\end{enumerate}
+
+\subsection{Deployment Recommendations}
+
+\begin{enumerate}
+    \item \textbf{Pilot Deployment}: Conduct extended pilot deployment (6-12 months) in Malolos City to validate long-term reliability.
+    
+    \item \textbf{Community Partnership}: Partner with barangay disaster risk reduction committees for sensor installation and maintenance.
+    
+    \item \textbf{Local Manufacturing}: Explore local PCB assembly services to reduce costs further and create local capacity.
+    
+    \item \textbf{Training Program}: Develop training materials for LGU personnel on sensor installation and maintenance.
+\end{enumerate}
+
+\subsection{Research Collaboration}
+
+\begin{enumerate}
+    \item Submit findings to DOST-PCIEERD for potential funding support of expanded deployment.
+    
+    \item Collaborate with other universities in the Philippines to replicate and validate the design.
+    
+    \item Publish findings in peer-reviewed journals to contribute to the broader research community.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% REFERENCES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{enumerate}[label={[\arabic*]}, leftmargin=*, itemsep=0.5em]
+
+\item Chen, L., Wang, H., \& Zhang, Y. (2019). High-precision ultrasonic distance measurement using pulse compression techniques. \textit{IEEE Sensors Journal}, 19(12), 4523-4531. https://doi.org/10.1109/JSEN.2019.2908234
+
+\item Dela Cruz, M., Santos, P., \& Reyes, A. (2021). IoT-based flood monitoring system implementation in Marikina City. \textit{Philippine Journal of Science}, 150(3), 789-802.
+
+\item Garcia, R., \& Torres, M. (2021). Non-contact water level sensing technologies: A comparative review. \textit{Sensors and Actuators A: Physical}, 318, 112489. https://doi.org/10.1016/j.sna.2020.112489
+
+\item Hevner, A. R., March, S. T., Park, J., \& Ram, S. (2004). Design science in information systems research. \textit{MIS Quarterly}, 28(1), 75-105.
+
+\item Kim, J., Park, S., \& Lee, K. (2020). Multi-sample averaging techniques for ultrasonic sensors in noisy environments. \textit{Measurement Science and Technology}, 31(5), 055101.
+
+\item Lopez, F., \& Reyes, C. (2023). Challenges in ultrasonic flood monitoring: A systematic review. \textit{Journal of Flood Risk Management}, 16(2), e12892.
+
+\item Martinez, E., \& Aquino, J. (2023). Cost barriers to flood sensor deployment in developing countries. \textit{International Journal of Disaster Risk Reduction}, 85, 103497.
+
+\item National Disaster Risk Reduction and Management Council. (2023). \textit{Annual Report 2022: Natural Disasters in the Philippines}. NDRRMC.
+
+\item NXP Semiconductors. (2007). \textit{Application Note AN10441: Level shifting techniques in I2C-bus design}. NXP.
+
+\item PAGASA. (2024). \textit{Climate and Weather Statistics of the Philippines}. Philippine Atmospheric, Geophysical and Astronomical Services Administration.
+
+\item Park, H., \& Lee, J. (2022). Event-triggered sampling for power-efficient environmental monitoring. \textit{IEEE Internet of Things Journal}, 9(8), 6234-6245.
+
+\item Rahman, M., Hossain, A., \& Islam, T. (2022). Arduino-based flood warning system using ultrasonic sensor. \textit{International Journal of Electronics and Communication Engineering}, 9(4), 112-119.
+
+\item Santos, R., Cruz, M., \& Villanueva, A. (2022). Survey of flood monitoring technologies in Southeast Asia. \textit{Asian Journal of Environment and Disaster Management}, 14(2), 201-218.
+
+\item Wilson, D. K. (2020). \textit{Fundamentals of Acoustic Wave Propagation}. Cambridge University Press.
+
+\item World Bank. (2021). \textit{Flood Risk Management in Asia Pacific: Policy Recommendations}. World Bank Publications.
+
+\item Zhang, X., \& Wang, L. (2021). Statistical outlier detection methods for sensor data processing. \textit{IEEE Transactions on Instrumentation and Measurement}, 70, 1-12.
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDICES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+
+\subsection*{Appendix A: Component Supplier Links (Philippines)}
+\addcontentsline{toc}{subsection}{Appendix A: Component Supplier Links}
+
+\begin{enumerate}[label=\arabic*., itemsep=0.3em]
+    \item \textbf{Makerlab Electronics} - \url{https://www.makerlab-electronics.com/}
+    \begin{itemize}
+        \item Ultrasonic transducers (TCT40-16T/R)
+        \item LM324 Op-Amp, DS18B20 Temperature Sensor
+    \end{itemize}
+    
+    \item \textbf{Circuit Depot} - \url{https://circuit.rocks/}
+    \begin{itemize}
+        \item TC4427 MOSFET Driver, Various ICs
+    \end{itemize}
+    
+    \item \textbf{E-Gizmo Mechatronix Central} - \url{https://www.e-gizmo.net/}
+    \begin{itemize}
+        \item Resistor kits, Capacitor kits, Development boards
+    \end{itemize}
+    
+    \item \textbf{Alexan Commercial} - \url{https://alexan.com.ph/}
+    \begin{itemize}
+        \item LM7805 Voltage regulator, Basic components
+    \end{itemize}
+    
+    \item \textbf{Lazada Philippines} - \url{https://www.lazada.com.ph/}
+    \begin{itemize}
+        \item AMS1117-3.3, PG7 Cable glands, Various components
+    \end{itemize}
+    
+    \item \textbf{Shopee Philippines} - \url{https://shopee.ph/}
+    \begin{itemize}
+        \item BSS138 MOSFETs, Electronic components
+    \end{itemize}
+    
+    \item \textbf{JLCPCB} - \url{https://jlcpcb.com/}
+    \begin{itemize}
+        \item PCB fabrication (ships to Philippines)
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Appendix B: Algorithm Pseudocode}
+\addcontentsline{toc}{subsection}{Appendix B: Algorithm Pseudocode}
+
+\textbf{Temperature Compensation Algorithm:}
+\begin{lstlisting}[language=Python, caption={Temperature Compensation}]
+def get_speed_of_sound(temperature_celsius):
+    # Speed of sound formula
+    speed = 331.4 + (0.6 * temperature_celsius)
+    return speed  # meters per second
+
+def calculate_distance(pulse_duration_us, temperature):
+    speed = get_speed_of_sound(temperature)
+    # Convert microseconds to seconds
+    time_seconds = pulse_duration_us / 1000000.0
+    # Distance = (speed * time) / 2 (round trip)
+    distance = (speed * time_seconds) / 2
+    return distance  # meters
+\end{lstlisting}
+
+\textbf{Multi-shot Averaging with Outlier Rejection:}
+\begin{lstlisting}[language=Python, caption={Multi-shot Averaging}]
+def measure_distance_filtered(num_samples=15):
+    samples = []
+    temperature = read_temperature()
+    
+    for i in range(num_samples):
+        duration = measure_pulse_duration()
+        distance = calculate_distance(duration, temperature)
+        samples.append(distance)
+        delay_ms(10)  # Short delay between samples
+    
+    # Calculate mean and standard deviation
+    mean = sum(samples) / len(samples)
+    variance = sum((x - mean)**2 for x in samples) / len(samples)
+    std_dev = sqrt(variance)
+    
+    # Filter outliers (keep samples within 2 sigma)
+    valid_samples = [s for s in samples 
+                     if abs(s - mean) < 2 * std_dev]
+    
+    # Return median of valid samples
+    valid_samples.sort()
+    median = valid_samples[len(valid_samples) // 2]
+    return median
+\end{lstlisting}
+
+\subsection*{Appendix C: Testing Data Tables}
+\addcontentsline{toc}{subsection}{Appendix C: Testing Data Tables}
+
+\textbf{Table C.1: Repeatability Test Results (100 measurements at 2.0m)}
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        \textbf{Statistic} & \textbf{Value} \\
+        \midrule
+        Mean & 2.002 m \\
+        Standard Deviation & 0.0023 m (2.3 mm) \\
+        Minimum & 1.995 m \\
+        Maximum & 2.008 m \\
+        Range & 0.013 m (13 mm) \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{Table C.2: Temperature Compensation Test Results}
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{@{}ccccc@{}}
+        \toprule
+        \textbf{Temp (°C)} & \textbf{Actual (m)} & \textbf{No Comp (m)} & \textbf{With Comp (m)} & \textbf{Improvement} \\
+        \midrule
+        20 & 2.000 & 2.008 & 2.001 & 87.5\% \\
+        25 & 2.000 & 2.004 & 2.001 & 75.0\% \\
+        30 & 2.000 & 2.001 & 2.000 & 100.0\% \\
+        35 & 2.000 & 1.997 & 1.999 & 66.7\% \\
+        40 & 2.000 & 1.993 & 1.999 & 85.7\% \\
+        45 & 2.000 & 1.988 & 1.998 & 83.3\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

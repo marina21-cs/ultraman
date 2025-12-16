@@ -1,0 +1,12 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces System Block Diagram of the Custom Ultrasonic Sensor}}{15}{figure.caption.2}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Complete Circuit Schematic of the Custom Ultrasonic Sensor}}{17}{figure.caption.3}%
+\contentsline {figure}{\numberline {3}{\ignorespaces PCB Layout - Top and Bottom Layers}}{18}{figure.caption.4}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Main Measurement Algorithm Flowchart}}{19}{figure.caption.5}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Outlier Rejection Algorithm Flowchart}}{21}{figure.caption.6}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Adaptive Sampling Rate Algorithm Flowchart}}{23}{figure.caption.7}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Enclosure Design - Cross-Section and Top View}}{24}{figure.caption.9}%
+\contentsline {figure}{\numberline {8}{\ignorespaces 3D Isometric View of Sensor Enclosure}}{25}{figure.caption.10}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Installation Diagram - Pole Mounting Configuration}}{26}{figure.caption.11}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Accuracy Testing Results: (a) Distance Accuracy, (b) Error Distribution, (c) Temperature Compensation Effect, (d) Multi-shot Averaging Effect}}{29}{figure.caption.13}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Environmental Testing Results: (a) Rain Condition Performance, (b) Water Surface Type Performance, (c) 24-Hour Stability Test, (d) Power Consumption Analysis}}{30}{figure.caption.14}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Comparison with Commercial Sensors: (a) Feature Comparison Radar Chart, (b) Cost Comparison}}{33}{figure.caption.16}%
